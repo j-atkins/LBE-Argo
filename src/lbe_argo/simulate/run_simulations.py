@@ -7,7 +7,7 @@ lines rather than a full transcript, since `virtualship run`'s progress bar emit
 per update once stdout isn't a tty.
 
 Usage:
-    python -m lbe_argo.simulate.run_simulations [--workers N] [--overwrite] [--only 1993_H1 ...]
+    python -m lbe_argo.simulate.run_simulations [--workers N] [--overwrite] [--stream] [--only 1993_H1 ...]
 """
 
 import argparse
@@ -67,20 +67,21 @@ def reset_incomplete_run(expedition_dir: Path) -> None:
     (expedition_dir / "checkpoint.yaml").unlink(missing_ok=True)
 
 
-def run_expedition(expedition_dir: Path) -> tuple[Path, bool, float]:
-    """Run one expedition as a subprocess, logging its output. Returns (dir, success, minutes)."""
+def run_expedition(expedition_dir: Path, stream: bool) -> tuple[Path, bool, float]:
+    """Run one expedition as a subprocess, logging its output.
+
+    With stream=True, virtualship fetches ocean data via its normal streaming methods
+    instead of reading the local files in OCEAN_DATA_DIR.
+    """
     reset_incomplete_run(expedition_dir)
     start = time.time()
     log_path = expedition_dir / LOG_FILE
     tail: deque[str] = deque(maxlen=LOG_TAIL_LINES)
+    cmd = ["virtualship", "run", str(expedition_dir)]
+    if not stream:
+        cmd += ["--from-data", str(OCEAN_DATA_DIR)]
     proc = subprocess.Popen(
-        [
-            "virtualship",
-            "run",
-            str(expedition_dir),
-            "--from-data",
-            str(OCEAN_DATA_DIR),
-        ],
+        cmd,
         stdin=subprocess.DEVNULL,  # never hang on an interactive prompt
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -112,6 +113,12 @@ def main() -> int:
     parser.add_argument(
         "--only", nargs="+", help="Expedition directory names to run, e.g. 1993_H1."
     )
+    parser.add_argument(
+        "--stream",
+        action="store_true",
+        help="Stream ocean data with virtualship's normal methods instead of using "
+        "--from-data with the local files in OCEAN_DATA_DIR.",
+    )
     args = parser.parse_args()
 
     expedition_dirs = sorted(
@@ -120,8 +127,11 @@ def main() -> int:
     if args.only:
         expedition_dirs = [d for d in expedition_dirs if d.name in args.only]
 
-    data_start, data_end = available_data_range(PHYS_DATA_DIR)
-    print(f"Ocean data available: {data_start} to {data_end}")
+    if args.stream:
+        print("Streaming ocean data (not using local files)")
+    else:
+        data_start, data_end = available_data_range(PHYS_DATA_DIR)
+        print(f"Ocean data available: {data_start} to {data_end}")
 
     to_run = []
     for d in expedition_dirs:
@@ -135,10 +145,11 @@ def main() -> int:
                 f"{backup_dir.name} and continuing"
             )
             shutil.move(str(d / RESULT_FILE.parent), str(backup_dir))
-        need_start, need_end = required_data_range(d / EXPEDITION_FILE)
-        if need_start < data_start or need_end > data_end:
-            print(f"  skip {d.name}: needs data {need_start} to {need_end}")
-            continue
+        if not args.stream:
+            need_start, need_end = required_data_range(d / EXPEDITION_FILE)
+            if need_start < data_start or need_end > data_end:
+                print(f"  skip {d.name}: needs data {need_start} to {need_end}")
+                continue
         to_run.append(d)
 
     if not to_run:
@@ -148,7 +159,7 @@ def main() -> int:
     print(f"\nRunning {len(to_run)} expedition(s) with {args.workers} worker(s)...")
     failed = []
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
-        futures = [pool.submit(run_expedition, d) for d in to_run]
+        futures = [pool.submit(run_expedition, d, args.stream) for d in to_run]
         for i, future in enumerate(as_completed(futures), start=1):
             d, success, minutes = future.result()
             status = "done" if success else f"FAILED (see {d / LOG_FILE})"
