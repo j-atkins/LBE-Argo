@@ -67,8 +67,8 @@ This downloads the global bathymetry file and daily physical ocean data files to
 
 Skip this step if you run the simulations with `--stream` (see below).
 
-```{warning}
-Pre-downloading the full data will take a lot of disk space (estimate > 200GB). Try running with --stream (see below) if you don't have enough space.
+> [!WARNING]
+Pre-downloading the full data will take a lot of disk space (estimate > 200GB) and many hours to complete. Try running with --stream (see below) if you don't have enough space.
 ```
 
 #### 3. Run the simulations
