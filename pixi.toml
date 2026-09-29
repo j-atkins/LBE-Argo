@@ -1,0 +1,45 @@
+[workspace]
+name = "lbe-argo"
+channels = ["conda-forge"]
+platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
+exclude-newer = "5d"
+requires-pixi = ">=0.72.0"
+
+[dependencies]
+python = ">=3.11"
+netcdf4 = "*"
+numpy = ">=2.1.0"
+dask = "*"
+pandas = "*"
+pyarrow = "*"
+ipdb = ">=0.13.13,<0.14"
+cmocean = ">=4.0.3,<5"
+numba = ">=0.59.0"
+pydantic = ">=2,<3"
+pyyaml = "*"
+copernicusmarine = ">=2.2.2"
+click = "*"
+pyproj = ">=3,<4"
+sortedcontainers = "==2.4.0"
+opensimplex = "==0.4.5"
+yaspin = "*"
+textual = "*"
+parcels = ">=4"
+
+[pypi-dependencies]
+lbe-argo = { path = ".", editable = true }
+virtualship = { git = "https://github.com/Parcels-code/virtualship", branch = "performance" } 
+
+
+[feature.py314.dependencies]
+python = "3.14.*"
+zarr = ">=3.0.0"
+
+[feature.typing.dependencies]
+mypy = "*"
+lxml = "*"
+pandas-stubs = "*"
+types-PyYAML = "*"
+
+[environments]
+default = { features = ["py314", "typing"], solve-group = "main" }

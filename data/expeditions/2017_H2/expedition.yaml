@@ -1,0 +1,81 @@
+instruments_config:
+  argo_float_config:
+    cycle_days: 10.0
+    drift_days: 9.0
+    drift_depth_meter: -1000.0
+    lifetime_days: 365.0
+    max_depth_meter: -2000.0
+    min_depth_meter: 0.0
+    sensors:
+    - TEMPERATURE
+    - SALINITY
+    stationkeeping_time_minutes: 20.0
+    vertical_speed_meter_per_second: -0.1
+schedule:
+  waypoints:
+  - location: null
+    time: null
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 67.66517
+      longitude: 4.78009
+    time: 2017-07-28 13:00:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 67.580727
+      longitude: 2.739642
+    time: 2017-07-31 16:00:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 66.10473
+      longitude: 3.706632
+    time: 2017-08-02 20:15:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 66.234247
+      longitude: 2.082572
+    time: 2017-08-31 17:45:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 66.619015
+      longitude: 2.709162
+    time: 2017-09-13 06:30:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 67.351424
+      longitude: 0.17268
+    time: 2017-10-02 03:45:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 67.365919
+      longitude: 0.605894
+    time: 2017-10-06 07:15:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 66.065599
+      longitude: 4.895356
+    time: 2017-11-06 13:30:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 66.161533
+      longitude: 2.154846
+    time: 2017-11-08 02:30:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 67.770009
+      longitude: 3.743272
+    time: 2017-12-22 10:30:00
+  - location: null
+    time: null
+ship_config:
+  ship_speed_knots: 10.0

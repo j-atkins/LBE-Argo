@@ -1,0 +1,87 @@
+instruments_config:
+  argo_float_config:
+    cycle_days: 10.0
+    drift_days: 9.0
+    drift_depth_meter: -1000.0
+    lifetime_days: 365.0
+    max_depth_meter: -2000.0
+    min_depth_meter: 0.0
+    sensors:
+    - TEMPERATURE
+    - SALINITY
+    stationkeeping_time_minutes: 20.0
+    vertical_speed_meter_per_second: -0.1
+schedule:
+  waypoints:
+  - location: null
+    time: null
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 67.53862
+      longitude: 4.026672
+    time: 2020-01-03 01:00:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 66.01884
+      longitude: 2.395044
+    time: 2020-01-15 09:15:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 66.408114
+      longitude: 4.588282
+    time: 2020-02-18 12:45:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 67.463129
+      longitude: 2.78143
+    time: 2020-02-22 06:00:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 67.892826
+      longitude: 4.24213
+    time: 2020-03-15 01:00:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 67.155763
+      longitude: 2.271104
+    time: 2020-03-20 14:15:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 66.596338
+      longitude: 1.852323
+    time: 2020-04-22 00:30:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 66.11924
+      longitude: 0.379219
+    time: 2020-05-03 19:45:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 66.821797
+      longitude: 4.244583
+    time: 2020-05-28 02:15:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 67.151339
+      longitude: 3.807745
+    time: 2020-06-10 01:30:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 66.643477
+      longitude: 4.649721
+    time: 2020-06-26 18:15:00
+  - location: null
+    time: null
+ship_config:
+  ship_speed_knots: 10.0

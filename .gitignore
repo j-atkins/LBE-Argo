@@ -1,0 +1,20 @@
+*.nc
+*.egg-info/
+.pixi/
+__pycache__/
+*.pyc
+pixi.lock
+
+# simulation outputs (expedition.yaml files are tracked for reproducibility)
+*.parquet
+data/expeditions/*/results*/
+data/expeditions/*/cache/
+data/expeditions/*/run.log
+data/expeditions/*/checkpoint.yaml
+
+# marimo
+__marimo__/
+
+# OS / local tooling
+.DS_Store
+.claude/settings.local.json

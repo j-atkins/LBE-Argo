@@ -1,0 +1,75 @@
+instruments_config:
+  argo_float_config:
+    cycle_days: 10.0
+    drift_days: 9.0
+    drift_depth_meter: -1000.0
+    lifetime_days: 365.0
+    max_depth_meter: -2000.0
+    min_depth_meter: 0.0
+    sensors:
+    - TEMPERATURE
+    - SALINITY
+    stationkeeping_time_minutes: 20.0
+    vertical_speed_meter_per_second: -0.1
+schedule:
+  waypoints:
+  - location: null
+    time: null
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 66.390395
+      longitude: 2.613317
+    time: 2003-07-26 09:30:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 67.575527
+      longitude: 4.610975
+    time: 2003-07-30 17:45:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 66.484711
+      longitude: 1.948841
+    time: 2003-08-14 15:00:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 67.824127
+      longitude: 2.154575
+    time: 2003-08-20 11:15:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 67.756168
+      longitude: 0.979253
+    time: 2003-09-22 12:00:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 66.385802
+      longitude: 0.040406
+    time: 2003-10-02 14:30:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 66.044948
+      longitude: 3.188437
+    time: 2003-10-22 13:30:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 66.643333
+      longitude: 3.702356
+    time: 2003-11-06 09:30:00
+  - instrument:
+    - ARGO_FLOAT
+    location:
+      latitude: 66.854354
+      longitude: 0.052324
+    time: 2003-12-23 12:45:00
+  - location: null
+    time: null
+ship_config:
+  ship_speed_knots: 10.0
