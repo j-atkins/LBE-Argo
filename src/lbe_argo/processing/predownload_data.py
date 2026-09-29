@@ -23,7 +23,7 @@ copernicusmarine.subset(
 
 ### PHYSICAL DAILY FILES
 
-DATASET_ID = "cmems_mod_glo_phy-all_my_0.25deg_P1D-m"
+DATASET_ID = "cmems_mod_glo_phy_my_0.083deg_P1D-m"
 
 dates = pd.date_range(start="1993-01-01", end="1995-12-31", freq="D")
 
