@@ -11,6 +11,7 @@ data/expeditions/*/results*/
 data/expeditions/*/cache/
 data/expeditions/*/run.log
 data/expeditions/*/checkpoint.yaml
+data/expeditions/*/expedition.yaml
 
 # marimo
 __marimo__/
