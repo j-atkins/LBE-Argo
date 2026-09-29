@@ -4,7 +4,7 @@ Each expedition lives in its own directory (e.g. data/expeditions/1993_H1/expedi
 and is run as a separate `virtualship run` subprocess, several in parallel. Output of each
 run is written to <expedition_dir>/run.log, kept as a rolling tail of the last LOG_TAIL_LINES
 lines rather than a full transcript, since `virtualship run`'s progress bar emits a new line
-per update once stdout isn't a tty.
+per update.
 
 Usage:
     python -m lbe_argo.simulate.run_simulations [--workers N] [--overwrite] [--stream] [--only 1993_H1 ...]
@@ -29,7 +29,7 @@ EXPEDITION_FILE = "expedition.yaml"
 RESULT_FILE = Path("results") / "argo_float.parquet"
 LOG_FILE = "run.log"
 LOG_TAIL_LINES = 200
-DEFAULT_WORKERS = 4  # each run loads ~1 year of daily ocean data; raise with care
+DEFAULT_WORKERS = 4  # each run loads ~1 year of daily ocean data; up this with care
 
 
 def available_data_range(data_dir: Path) -> tuple[date, date]:
