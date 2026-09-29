@@ -25,6 +25,7 @@ opensimplex = "==0.4.5"
 yaspin = "*"
 textual = "*"
 parcels = ">=4"
+marimo = ">=0.25.0,<0.26"
 
 [pypi-dependencies]
 lbe-argo = { path = ".", editable = true }
