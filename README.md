@@ -69,7 +69,6 @@ Skip this step if you run the simulations with `--stream` (see below).
 
 > [!WARNING]
 Pre-downloading the full data will take a lot of disk space (estimate > 200GB) and many hours to complete. Try running with --stream (see below) if you don't have enough space.
-```
 
 #### 3. Run the simulations
 
@@ -94,4 +93,10 @@ The analysis is a [marimo](https://marimo.io) notebook:
 
 ```bash
 pixi run marimo edit src/lbe_argo/analysis/argo_lbe_analysis.py
+```
+
+The notebook locates the Lofoten Basin Eddy in the daily ocean data in `data/ocean/phys/` and caches the track to `data/ocean/lbe_track.parquet`. The cache is rebuilt whenever the set of daily files changes. To build it ahead of time, run:
+
+```bash
+pixi run python -m lbe_argo.analysis.eddy_tracking
 ```
