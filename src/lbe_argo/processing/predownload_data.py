@@ -2,6 +2,9 @@ import pandas as pd
 import copernicusmarine
 from lbe_argo.config import BATHYMETRY_FPATH, PHYS_DATA_DIR
 
+## Overwrite data if already exists? Set to True to force re-download, False to skip existing files.
+OVERWRITE_EXISTING = True
+
 ### BATHYMETRY FILE (GLOBAL)
 DATASET_ID_BATHYMETRY = "cmems_mod_glo_phy_anfc_0.083deg_static"
 
@@ -31,8 +34,9 @@ for dt in dates:
     filename = PHYS_DATA_DIR / f"{DATASET_ID}_global_fulldepth_{date_str}.nc"
 
     if filename.exists():
-        print(f"File {filename} already exists, skipping...")
-        continue
+        if not OVERWRITE_EXISTING:
+            print(f"File {filename} already exists, skipping...")
+            continue
 
     copernicusmarine.subset(
         dataset_id=DATASET_ID,
@@ -45,5 +49,5 @@ for dt in dates:
         end_datetime=iso_time,
         minimum_depth=0.0,
         maximum_depth=2010.0,
-        output_filename=str(filename),
+        coordinates_selection_method="outside",
     )
