@@ -32,6 +32,11 @@ BATHYMETRY_FPATH = (
 )
 
 # ---
+# Lofoten Basin Eddy: observed, quasi-permanent centre (it wanders a few tens of km around this)
+
+LBE_CENTRE = dict(lat=69.8, lon=3.5)
+
+# ---
 # Simulation parameters for Argo floats in the Lofoten Basin
 
 ARGO_CONFIG = {
