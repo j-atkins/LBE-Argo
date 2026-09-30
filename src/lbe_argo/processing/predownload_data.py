@@ -3,7 +3,7 @@ import copernicusmarine
 from lbe_argo.config import BATHYMETRY_FPATH, PHYS_DATA_DIR
 
 ## Overwrite data if already exists? Set to True to force re-download, False to skip existing files.
-OVERWRITE_EXISTING = True
+OVERWRITE_EXISTING = False
 
 ### BATHYMETRY FILE (GLOBAL)
 DATASET_ID_BATHYMETRY = "cmems_mod_glo_phy_anfc_0.083deg_static"
@@ -27,7 +27,7 @@ if not BATHYMETRY_FPATH.exists() or OVERWRITE_EXISTING:
 
 DATASET_ID = "cmems_mod_glo_phy_my_0.083deg_P1D-m"
 
-dates = pd.date_range(start="1993-01-01", end="1995-12-31", freq="D")
+dates = pd.date_range(start="1993-01-01", end="2024-12-31", freq="D")
 
 for dt in dates:
     date_str = dt.strftime("%Y_%m_%d")
