@@ -9,7 +9,7 @@ OVERWRITE_EXISTING = True
 DATASET_ID_BATHYMETRY = "cmems_mod_glo_phy_anfc_0.083deg_static"
 
 
-if BATHYMETRY_FPATH.exists() and OVERWRITE_EXISTING:
+if not BATHYMETRY_FPATH.exists() or OVERWRITE_EXISTING:
     copernicusmarine.subset(
         dataset_id=DATASET_ID_BATHYMETRY,
         dataset_part="bathy",
