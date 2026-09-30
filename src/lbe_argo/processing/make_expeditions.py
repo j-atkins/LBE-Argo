@@ -48,7 +48,15 @@ def release_times(year: int, months: range) -> list[datetime]:
         max_days = 28 if month == 2 else (30 if month in [4, 6, 9, 11] else 31)
         days = random.sample(range(1, max_days + 1), random.choice([1, 2]))
         for day in days:
-            times.append(datetime(year, month, day, random.randint(0, 23), random.choice([0, 15, 30, 45])))
+            times.append(
+                datetime(
+                    year,
+                    month,
+                    day,
+                    random.randint(0, 23),
+                    random.choice([0, 15, 30, 45]),
+                )
+            )
     return sorted(times)
 
 
@@ -79,11 +87,24 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--strategy", choices=["upstream", "eddy"], default="upstream")
     parser.add_argument(
-        "--park-depth", type=int, default=STANDARD_PARK_DEPTH_M, help="Float parking (drift) depth in metres."
+        "--park-depth",
+        type=int,
+        default=STANDARD_PARK_DEPTH_M,
+        help="Float parking (drift) depth in metres.",
     )
-    parser.add_argument("--years", type=int, nargs=2, default=[START_YEAR, END_YEAR], metavar=("FIRST", "LAST"))
-    parser.add_argument("--seed", type=int, help="Random seed, for reproducible expeditions.")
-    parser.add_argument("--overwrite", action="store_true", help="Replace existing expedition files.")
+    parser.add_argument(
+        "--years",
+        type=int,
+        nargs=2,
+        default=[START_YEAR, END_YEAR],
+        metavar=("FIRST", "LAST"),
+    )
+    parser.add_argument(
+        "--seed", type=int, help="Random seed, for reproducible expeditions."
+    )
+    parser.add_argument(
+        "--overwrite", action="store_true", help="Replace existing expedition files."
+    )
     args = parser.parse_args()
 
     random.seed(args.seed)
