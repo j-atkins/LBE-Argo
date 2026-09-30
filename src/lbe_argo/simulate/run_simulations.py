@@ -6,8 +6,13 @@ run is written to <expedition_dir>/run.log, kept as a rolling tail of the last L
 lines rather than a full transcript, since `virtualship run`'s progress bar emits a new line
 per update.
 
+Only one flavour of experiment is run at a time, selected by its expedition name suffix
+(see lbe_argo.processing.make_expeditions): by default the standard one (1993_H1, ...),
+or e.g. `--flavour _eddy_park800m` for 1993_H1_eddy_park800m, ...
+
 Usage:
-    python -m lbe_argo.simulate.run_simulations [--workers N] [--overwrite] [--stream] [--only 1993_H1 ...]
+    python -m lbe_argo.simulate.run_simulations [--flavour _eddy_park800m] [--workers N]
+        [--overwrite] [--stream] [--only 1993_H1 ...]
 """
 
 import argparse
@@ -20,7 +25,6 @@ from collections import deque
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime, timedelta
 from pathlib import Path
-
 import yaml
 
 from lbe_argo.config import EXPEDITIONS_DIR, OCEAN_DATA_DIR, PHYS_DATA_DIR
@@ -30,6 +34,13 @@ RESULT_FILE = Path("results") / "argo_float.parquet"
 LOG_FILE = "run.log"
 LOG_TAIL_LINES = 200
 DEFAULT_WORKERS = 4  # each run loads ~1 year of daily ocean data; up this with care
+EXPEDITION_NAME_RE = re.compile(r"^\d{4}_H[12](?P<flavour>.*)$")  # e.g. 1993_H1_eddy_park800m
+
+
+def flavour_of(expedition_dir: Path) -> str | None:
+    """Experiment flavour (name suffix) of an expedition, e.g. "_eddy_park800m", or "" for standard."""
+    m = EXPEDITION_NAME_RE.match(expedition_dir.name)
+    return m.group("flavour") if m else None
 
 
 def available_data_range(data_dir: Path) -> tuple[date, date]:
@@ -111,7 +122,15 @@ def main() -> int:
         help="Rerun expeditions that already have results.",
     )
     parser.add_argument(
-        "--only", nargs="+", help="Expedition directory names to run, e.g. 1993_H1."
+        "--flavour",
+        default="",
+        help="Experiment flavour to run, i.e. the expedition name suffix, e.g. _eddy_park800m "
+        "(default: the standard flavour, e.g. 1993_H1).",
+    )
+    parser.add_argument(
+        "--only",
+        nargs="+",
+        help="Expedition directory names to run, e.g. 1993_H1_eddy. Overrides --flavour.",
     )
     parser.add_argument(
         "--stream",
@@ -126,6 +145,14 @@ def main() -> int:
     )
     if args.only:
         expedition_dirs = [d for d in expedition_dirs if d.name in args.only]
+    else:
+        flavour = args.flavour if not args.flavour or args.flavour.startswith("_") else f"_{args.flavour}"
+        available = sorted({f for d in expedition_dirs if (f := flavour_of(d)) is not None})
+        expedition_dirs = [d for d in expedition_dirs if flavour_of(d) == flavour]
+        print(f"Flavour: {flavour or '(standard)'}")
+        if not expedition_dirs:
+            print(f"No expeditions of this flavour. Available: {', '.join(f or '(standard)' for f in available)}")
+            return 1
 
     if args.stream:
         print("Streaming ocean data (not using local files)")
@@ -135,6 +162,11 @@ def main() -> int:
 
     to_run = []
     for d in expedition_dirs:
+        if not args.stream:
+            need_start, need_end = required_data_range(d / EXPEDITION_FILE)
+            if need_start < data_start or need_end > data_end:
+                print(f"  skip {d.name}: needs data {need_start} to {need_end}")
+                continue
         if (d / RESULT_FILE).exists():
             if not args.overwrite:
                 print(f"  skip {d.name}: already has results")
@@ -145,11 +177,6 @@ def main() -> int:
                 f"{backup_dir.name} and continuing"
             )
             shutil.move(str(d / RESULT_FILE.parent), str(backup_dir))
-        if not args.stream:
-            need_start, need_end = required_data_range(d / EXPEDITION_FILE)
-            if need_start < data_start or need_end > data_end:
-                print(f"  skip {d.name}: needs data {need_start} to {need_end}")
-                continue
         to_run.append(d)
 
     if not to_run:
