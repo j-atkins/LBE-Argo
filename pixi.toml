@@ -26,6 +26,7 @@ yaspin = "*"
 textual = "*"
 parcels = ">=4"
 marimo = ">=0.25.0,<0.26"
+plotly = ">=5"
 
 [pypi-dependencies]
 lbe-argo = { path = ".", editable = true }
