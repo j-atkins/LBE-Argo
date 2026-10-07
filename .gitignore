@@ -15,6 +15,7 @@ data/expeditions/*/expedition.yaml
 
 # marimo
 __marimo__/
+layouts/
 
 # OS / local tooling
 .DS_Store

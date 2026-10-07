@@ -59,19 +59,8 @@ This writes an `expedition.yaml` to `data/expeditions/<YEAR>_H<1|2>/` for each h
 
 | Option | Description |
 | --- | --- |
-| `--strategy eddy` | Release the floats directly at the Lofoten Basin Eddy (within 20 km of its observed centre, 69.8°N, 3.5°E) instead of upstream. Expedition names get an `_eddy` suffix, e.g. `1993_H1_eddy`. |
-| `--park-depth M` | Park (drift) the floats at `M` metres instead of the standard 1000 m. Expedition names get a `_park<M>m` suffix, e.g. `1993_H1_park800m`. |
 | `--years FIRST LAST` | Only generate expeditions for these years, e.g. `--years 1993 1995`. |
 | `--seed N` | Random seed, to make the generated expeditions reproducible. |
-
-Because each experiment gets its own names, you can run several side by side and compare them in the notebook. For example, to add floats released at the eddy and parked at 800 m for 1993–1995:
-
-```bash
-pixi run python -m lbe_argo.processing.make_expeditions --strategy eddy --park-depth 800 --years 1993 1995
-```
-
-> [!NOTE]
-> These are idealised experiments, so we've allowed ourselves to pick the parking/drift depth quite casually, e.g. shallower so that floats sit in the eddy's core (roughly 300–1000 m deep). With real Argo floats this isn't so simple. Most Argo floats park at 1000 m by standard design, so their data are comparable across the global array, and a different parking depth is a choice that has to be made before deployment.
 
 #### 2. Download ocean data (optional)
 
@@ -96,14 +85,11 @@ This runs [VirtualShip](https://github.com/Parcels-code/virtualship) once for ea
 
 By default the simulations use the pre-downloaded data (`virtualship run --from-data`). Expeditions that need dates outside the downloaded range are skipped.
 
-Only one flavour of experiment is run at a time. By default it's the standard one (`1993_H1`, `1993_H2`, ...).
-
 | Option | Description |
 | --- | --- |
-| `--flavour SUFFIX` | Run a different experiment flavour, given by its expedition name suffix, e.g. `--flavour _eddy_park800m` runs `1993_H1_eddy_park800m`, `1993_H2_eddy_park800m`, ... |
 | `--stream` | Stream ocean data with VirtualShip's normal methods instead of using local files. This skips the check that the needed dates are on disk, but simulations can be slower and may use more RAM. |
 | `--workers N`, `-j N` | Number of simulations to run in parallel (default 4). Each run loads about a year of daily data, so check memory before upping this. |
-| `--only NAME ...` | Run only the named expeditions, of any flavour, e.g. `--only 1993_H1 1993_H2_eddy`. Overrides `--flavour`. |
+| `--only NAME ...` | Run only the named expeditions, e.g. `--only 1993_H1 1993_H2`. |
 | `--overwrite` | Rerun expeditions that already have results. The existing results are moved to `results_backup_<timestamp>/`. |
 
 #### 4. Analyse the results
@@ -114,4 +100,10 @@ The analysis is a [marimo](https://marimo.io) notebook:
 pixi run marimo edit src/lbe_argo/analysis/argo_lbe_analysis.py
 ```
 
-By default a float counts as inside the eddy when it is within 75 km of the LBE's observed centre (69.8°N, 3.5°E). The notebook lets you change the centre and radius, or use a rough centre estimated from the ocean data on disk (the warmest water at 500 m in the Lofoten Basin). It shows one experiment flavour at a time (e.g. standard, or `_eddy_park800m`), picked from a dropdown.
+The notebook reads slim copies of the simulation output (deployments, 6-hourly positions and profile samples; a few hundred kB per expedition instead of ~500 MB). They are built automatically on first use, or up front with:
+
+```bash
+pixi run python -m lbe_argo.processing.slim_results
+```
+
+All notebook settings live in its "control room": the deployment years and number of floats per year, and the eddy centre and radius. By default a float counts as inside the eddy when it is within 75 km of the LBE's observed centre (69.8°N, 3.5°E), or you can use a rough centre estimated from the ocean data on disk (the warmest water at 500 m in the Lofoten Basin).

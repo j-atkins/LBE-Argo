@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 # ---
@@ -24,6 +25,15 @@ EXPEDITIONS_DIR = DATA_DIR / "expeditions"
 OCEAN_DATA_DIR = DATA_DIR / "ocean"
 
 PHYS_DATA_DIR = OCEAN_DATA_DIR / "phys"
+
+# expeditions are named <YEAR>_H<1|2>, e.g. 1993_H1; anything else in EXPEDITIONS_DIR is ignored
+EXPEDITION_NAME_RE = re.compile(r"\d{4}_H[12]")
+
+
+def is_expedition(expedition_dir: Path) -> bool:
+    """Whether a directory in EXPEDITIONS_DIR is one of the project's expeditions."""
+    return EXPEDITION_NAME_RE.fullmatch(expedition_dir.name) is not None
+
 
 BATHYMETRY_FPATH = (
     OCEAN_DATA_DIR
