@@ -26,7 +26,7 @@ app = marimo.App(
 )
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
     import math
     import tempfile
@@ -85,7 +85,7 @@ def _():
     )
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     # next to the notebook if we have the repo, otherwise from GitHub (e.g. in the cloud)
     _notebook_dir = mo.notebook_dir()
@@ -158,7 +158,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     callout_text = mo.md(r"""
 
@@ -195,7 +195,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     callout_text_ctrl_room = mo.md(r"""
     **Tip**: The "control room" below will let you thin out the campaign (reduce the number of Argo floats available etc.) and see how quickly the picture gets worse. This will be helpful when we start considering the implications of the results later in the notebook.
@@ -205,7 +205,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
     ## PARAMS
 
@@ -266,7 +266,7 @@ def _():
     )
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(list_available):
     # every expedition (e.g. 1993_H1) with simulation output, and how many floats it releases
     available = list_available()
@@ -307,7 +307,7 @@ def _(available, mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     EDDY_RADIUS_DEFAULT_KM,
     LBE_CENTRE,
@@ -430,7 +430,7 @@ def _(
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     ## Load simulation output
@@ -438,7 +438,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(NEW_PROFILE_GAP_S, Path, available, load_slim, mo, pl, year_range):
     _todo = available.filter(pl.col("year").is_between(*year_range.value))
 
@@ -507,7 +507,7 @@ def _(NEW_PROFILE_GAP_S, Path, available, load_slim, mo, pl, year_range):
     return deployments_loaded, samples_loaded, skipped, tracks_loaded
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(EDDY_SEARCH_BOX, load_bathymetry, load_model_mean_temp, mo):
     # background fields: bathymetry, and the model's time-mean temperature at the 3D
     # picture's depth slices. Independent of the controls, so this only runs once.
@@ -536,7 +536,7 @@ def _(EDDY_SEARCH_BOX, load_bathymetry, load_model_mean_temp, mo):
     return bathymetry, mean_temp_500m, model_eddy_centre, model_mean_temp
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     DENSITY_SEED,
     R_EARTH_KM,
@@ -641,7 +641,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     DEPLOY_BOX,
     Geodesic,
@@ -864,14 +864,14 @@ def _(ANIMATION_TAIL_DAYS, mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     animate_button = mo.ui.run_button(label="Build animation")
     animate_button
     return (animate_button,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     ANIMATION_MAX_FRAMES,
     ANIMATION_MIN_STEP_DAYS,
@@ -981,7 +981,7 @@ def _(
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     callout_text_slow_animation = mo.md(r"""
     **Tip**: Use the `-` button to slow the animation down if you want to watch more carefully! Or the `+` to speed it back up.
@@ -1003,7 +1003,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(np, pl, plt, tracks):
     _daily = (
         tracks.with_columns(day=pl.col("days_since_deploy").floor())
@@ -1095,7 +1095,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     callout_how_read = mo.md(r"""
 
@@ -1107,7 +1107,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(pl):
     VARIABLES = {
         "temperature": "Temperature (°C)",
@@ -1134,7 +1134,7 @@ def _(pl):
     return VARIABLES, binned_profile
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     INK,
     INK_MUTED,
@@ -1213,7 +1213,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     INSIDE_COLOR,
     OUTSIDE_COLOR,
@@ -1304,7 +1304,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     callout_try_plot = mo.md(r"""
 
@@ -1316,7 +1316,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     callout_plot_notes = mo.md(r"""
 
@@ -1335,7 +1335,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     COMPOSITE_GRID_KM,
     COMPOSITE_HALF_WIDTH_KM,
@@ -1420,7 +1420,7 @@ def _(
     )
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     COMPOSITE_HALF_WIDTH_KM,
     INSIDE_COLOR,

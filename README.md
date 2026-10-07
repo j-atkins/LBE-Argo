@@ -20,6 +20,8 @@ pixi run marimo edit src/lbe_argo/analysis/argo_lbe_analysis.py
 
 [![Open in molab](https://marimo.io/molab-shield.svg)](https://molab.marimo.io/github/j-atkins/LBE-Argo/blob/main/src/lbe_argo/analysis/argo_lbe_analysis.py)
 
+**For students:** on the page that opens, click **"Run it now"** (the green link at the top; no need to save or fork anything). Give it a minute or two to install and load the data the first time, then scroll down: the notebook runs itself, and you can change the settings in the **Control room** and watch the plots update. The code is hidden by default, so you only see the results and the explanations.
+
 This opens the notebook in [molab](https://molab.marimo.io/), marimo's free cloud notebooks. The notebook's dependencies are listed in its header and installed automatically, and the (small) data it needs is downloaded from this repository, so there is nothing to set up. The simulation workflow below is not needed for this.
 
 ## More technical detail...
