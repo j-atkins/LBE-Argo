@@ -18,11 +18,23 @@ pixi run marimo edit src/lbe_argo/analysis/argo_lbe_analysis.py
 
 ### ...or in your browser, with no setup
 
+**Open the app (on Molab) [here](https://molab.marimo.io/notebooks/nb_tUUNWQGyGS7MaUY2fsLJ7y/app)**
+
+This is the finished notebook as an interactive app, with the code hidden. It may take a minute or two to start. Scroll down, and change the settings in the **Control room** to watch the plots update. Nothing to install.
+
+Please note, as of October 2026 the app is running as expected. In case the link stops working, please [raise an Issue](https://github.com/j-atkins/LBE-Argo/issues) in this repository, and/or follow the instructions below to run the notebook in your own environment.
+
+#### If the app link doesn't work, or you want to see and edit the code
+
 [![Open in molab](https://marimo.io/molab-shield.svg)](https://molab.marimo.io/github/j-atkins/LBE-Argo/blob/main/src/lbe_argo/analysis/argo_lbe_analysis.py)
 
-**For students:** on the page that opens, click **"Run it now"** (the green link at the top; no need to save or fork anything). Give it a minute or two to install and load the data the first time, then scroll down: the notebook runs itself, and you can change the settings in the **Control room** and watch the plots update. The code is hidden by default, so you only see the results and the explanations.
+This opens the notebook in [molab](https://molab.marimo.io/), marimo's free cloud notebooks. There is nothing to install, but you need to sign in to molab (a free account is enough). To get the finished, interactive version:
 
-This opens the notebook in [molab](https://molab.marimo.io/), marimo's free cloud notebooks. The notebook's dependencies are listed in its header and installed automatically, and the (small) data it needs is downloaded from this repository, so there is nothing to set up. The simulation workflow below is not needed for this.
+1. On the page that opens, click **"Run it now"** (the green link at the top) and sign in when asked.
+2. A box asks "Run this notebook on a server?" and warns that the notebook "has not been verified by marimo". That warning appears for every notebook marimo hasn't reviewed. Click **"Run on server"**.
+3. Wait for the server to start. The notebook doesn't run by itself here, so press the big yellow **play button** at the bottom-right of the page once. The first run takes a minute or two, while it installs what it needs and loads the data.
+4. To hide the code and see just the results and explanations, click the **middle** one of the three buttons above the play button (the "app view" toggle). Click it again to get the code back.
+5. Scroll down, and change the settings in the **Control room** to watch the plots update.
 
 ## More technical detail...
 
@@ -121,7 +133,24 @@ The notebook only needs a few small files, which are bundled in [`data/bundled/`
 pixi run python -m lbe_argo.processing.bundle_data
 ```
 
-By default a notebook link opens as a static preview only if a session snapshot is stored next to the notebook. To add one (so visitors see the results before running anything), run the notebook, then:
+##### The shared app (for students)
+
+Students are sent a single link to the notebook running as an app in [molab](https://molab.marimo.io/): the code is hidden, and there is no "Run on server" box, warning or play button. To set it up:
+
+1. Open the notebook in molab with the badge at the top of this README, sign in, and click **"Save a copy"** to put a copy in your own workspace.
+2. Press the play button, and wait for the notebook to finish running.
+3. Click **Share**, choose **"Run as app"**, and copy the link. Replace `YOUR-APP-LINK` at the top of this README with it.
+
+Things to keep in mind:
+
+- **Updating it.** The saved copy is separate from this repository (molab says changes to the mirrored notebook "won't be saved"), so pushing to GitHub is not expected to change it. After a change, make a fresh copy from the new version and share that, or edit the copy in molab, and check what viewers of the old link see.
+- **It shuts down when idle.** According to molab's documentation, notebooks idle for more than 90 minutes are shut down, and none run for longer than 12 hours. Whether a shared app link starts the notebook again for the next visitor isn't documented, so check the link from a signed-out browser the day before a class. If it has stopped, open your copy, press play and share it again.
+- **Check it works signed out.** molab's documentation says people opening a shared app don't need an account, but test this, and test it with a few people at once before a whole class uses it.
+- **Fall back to the steps above** if the app link isn't working on the day.
+
+##### Static preview in molab (optional)
+
+The badge link opens a read-only preview, which shows the notebook's code unless a session snapshot (the notebook's saved outputs) is stored next to it. To add one, run the notebook, then:
 
 ```bash
 pixi run marimo export session src/lbe_argo/analysis/argo_lbe_analysis.py
