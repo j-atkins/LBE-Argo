@@ -11,11 +11,10 @@ def find_project_root(current_path: Path) -> Path:
         if (parent / "pixi.toml").exists() or (parent / "pyproject.toml").exists():
             return parent
 
-    # fallback to relative depth if no marker found
+    # no marker found, e.g. when installed as a package (as in the cloud): fall back to a
+    # relative depth. Data paths are then unlikely to exist, so users fall back to the
+    # bundled files, which are downloaded (see lbe_argo.bundled).
     up_to_depth = 2
-    print(
-        f"Warning: Project root not found. Falling back to relative depth: {current_path.resolve().parents[up_to_depth]}"
-    )
     return current_path.resolve().parents[up_to_depth]
 
 
@@ -25,6 +24,12 @@ EXPEDITIONS_DIR = DATA_DIR / "expeditions"
 OCEAN_DATA_DIR = DATA_DIR / "ocean"
 
 PHYS_DATA_DIR = OCEAN_DATA_DIR / "phys"
+
+# The small files the analysis notebook needs (slim simulation results, ocean background
+# fields), committed to the repo so the notebook runs without the raw data. Where a copy of
+# the repo isn't available (e.g. the notebook running in the cloud), they are downloaded.
+BUNDLE_DIR = DATA_DIR / "bundled"
+BUNDLE_URL = "https://raw.githubusercontent.com/j-atkins/LBE-Argo/main/data/bundled"
 
 # expeditions are named <YEAR>_H<1|2>, e.g. 1993_H1; anything else in EXPEDITIONS_DIR is ignored
 EXPEDITION_NAME_RE = re.compile(r"\d{4}_H[12]")

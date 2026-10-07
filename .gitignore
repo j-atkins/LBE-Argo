@@ -1,4 +1,5 @@
 *.nc
+!data/bundled/*.nc
 *.egg-info/
 .pixi/
 __pycache__/
@@ -7,7 +8,13 @@ pixi.lock
 
 # simulation outputs (expedition.yaml files are tracked for reproducibility)
 *.parquet
-data/expeditions/*/results*/
+!data/bundled/*.parquet
+# other experiment flavours left over on disk are not part of the project
+data/expeditions/*_H?_*/
+data/expeditions/*/results_backup_*/
+# simulation output stays local; the small files the notebook needs are merged into
+# data/bundled/ (see lbe_argo.processing.bundle_data), which is committed
+data/expeditions/*/results/
 data/expeditions/*/cache/
 data/expeditions/*/run.log
 data/expeditions/*/checkpoint.yaml

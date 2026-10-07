@@ -16,8 +16,11 @@ pixi run marimo edit src/lbe_argo/analysis/argo_lbe_analysis.py
 > [!TIP]
 > Install [pixi](https://pixi.prefix.dev/latest/) to run the notebook in a local environment and/or inteact with the simulation workflow [below](#more-technical-detail).
 
-> [!IMPORTANT]
-> Work in progress to host this notebook (with data) to be run in the browser without any local setup.
+### ...or in your browser, with no setup
+
+[![Open in molab](https://marimo.io/molab-shield.svg)](https://molab.marimo.io/github/j-atkins/LBE-Argo/blob/main/src/lbe_argo/analysis/argo_lbe_analysis.py)
+
+This opens the notebook in [molab](https://molab.marimo.io/), marimo's free cloud notebooks. The notebook's dependencies are listed in its header and installed automatically, and the (small) data it needs is downloaded from this repository, so there is nothing to set up. The simulation workflow below is not needed for this.
 
 ## More technical detail...
 
@@ -107,3 +110,18 @@ pixi run python -m lbe_argo.processing.slim_results
 ```
 
 All notebook settings live in its "control room": the deployment years and number of floats per year, and the eddy centre and radius. By default a float counts as inside the eddy when it is within 75 km of the LBE's observed centre (69.8°N, 3.5°E), or you can use a rough centre estimated from the ocean data on disk (the warmest water at 500 m in the Lofoten Basin).
+
+#### 5. Share the notebook (optional)
+
+The notebook only needs a few small files, which are bundled in [`data/bundled/`](data/bundled/) and committed to this repository: the slim simulation tables of every expedition (merged, ~25 MB) and the ocean background fields (bathymetry and the model's time-mean temperature at the 3D picture's depth slices, ~2.5 MB). This is what lets the notebook run anywhere, e.g. in [molab](https://molab.marimo.io/), without the simulation output or the hundreds of GB of raw ocean data (when the bundle isn't on disk, it is downloaded from GitHub). Rebuild it after changing the simulations or the map region, then commit the result:
+
+```bash
+pixi run python -m lbe_argo.processing.bundle_data
+```
+
+By default a notebook link opens as a static preview only if a session snapshot is stored next to the notebook. To add one (so visitors see the results before running anything), run the notebook, then:
+
+```bash
+pixi run marimo export session src/lbe_argo/analysis/argo_lbe_analysis.py
+git add -f src/lbe_argo/analysis/__marimo__/session/
+```

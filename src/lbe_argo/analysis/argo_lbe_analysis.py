@@ -1,3 +1,22 @@
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#     "cartopy",
+#     "cmocean",
+#     "lbe-argo @ git+https://github.com/j-atkins/LBE-Argo.git",
+#     "marimo",
+#     "matplotlib",
+#     "netcdf4",
+#     "numpy",
+#     "plotly",
+#     "polars",
+#     "pyarrow",
+#     "pyyaml",
+#     "scipy",
+#     "xarray",
+# ]
+# ///
+
 import marimo
 
 __generated_with = "0.25.0"
@@ -21,7 +40,6 @@ def _():
     import numpy as np
     import polars as pl
     import xarray as xr
-    import yaml
     from cartopy.geodesic import Geodesic
     from matplotlib.animation import FuncAnimation, HTMLWriter
     from matplotlib.collections import LineCollection
@@ -29,18 +47,16 @@ def _():
     from matplotlib.lines import Line2D
     from matplotlib.patches import Patch
 
-    from lbe_argo.config import (
-        BATHYMETRY_FPATH,
-        EXPEDITIONS_DIR,
-        LBE_CENTRE,
-        PHYS_DATA_DIR,
-        is_expedition,
+    from lbe_argo.config import LBE_CENTRE
+    from lbe_argo.processing.ocean_background import (
+        MAP_EXTENT,
+        load_bathymetry,
+        load_model_mean_temp,
+        model_data_available,
     )
-    from lbe_argo.processing.slim_results import RESULT_FILE, load_slim
+    from lbe_argo.processing.slim_results import list_available, load_slim
 
     return (
-        BATHYMETRY_FPATH,
-        EXPEDITIONS_DIR,
         FuncAnimation,
         Geodesic,
         HTMLWriter,
@@ -48,29 +64,40 @@ def _():
         Line2D,
         LineCollection,
         ListedColormap,
-        PHYS_DATA_DIR,
+        MAP_EXTENT,
         Patch,
         Path,
-        RESULT_FILE,
         ccrs,
         cfeature,
         cmocean,
-        is_expedition,
+        list_available,
+        load_bathymetry,
+        load_model_mean_temp,
         load_slim,
         math,
         mo,
+        model_data_available,
         np,
         pl,
         plt,
         tempfile,
         xr,
-        yaml,
     )
 
 
 @app.cell
 def _(mo):
-    mo.image(mo.notebook_dir() / "assets" / "virtual_ship_logo.png", width=500)
+    # next to the notebook if we have the repo, otherwise from GitHub (e.g. in the cloud)
+    _notebook_dir = mo.notebook_dir()
+    _logo = (
+        _notebook_dir / "assets" / "virtual_ship_logo.png" if _notebook_dir else None
+    )
+    mo.image(
+        _logo
+        if _logo is not None and _logo.exists()
+        else "https://raw.githubusercontent.com/j-atkins/LBE-Argo/main/src/lbe_argo/analysis/assets/virtual_ship_logo.png",
+        width=500,
+    )
     return
 
 
@@ -192,19 +219,17 @@ def _():
     NEW_PROFILE_GAP_S = 3600  # gap in ascent samples that starts a new profile
     R_EARTH_KM = 6371.0
     KM_PER_DEG = 111.19
-    MAP_EXTENT = [-5, 20, 64, 78]  # extent of the downloaded ocean data
     # upstream deployment corridor, see lbe_argo/processing/make_expeditions.py
     DEPLOY_BOX = dict(lat_min=66.0, lat_max=68.0, lon_min=0.0, lon_max=5.0)
     # default "inside eddy" radius around the LBE centre: wide, to cover its wandering
     EDDY_RADIUS_DEFAULT_KM = 75
     # where to look for the eddy's warm core in the model data (the Lofoten Basin)
     EDDY_SEARCH_BOX = dict(lat_min=68.5, lat_max=71.5, lon_min=0.0, lon_max=8.0)
-    MODEL_MEAN_MAX_FILES = 120  # daily files averaged for the model climatology
 
     DENSITY_SEED = 42  # which floats are dropped when thinning the campaign
 
-    # 3D composite: depth slices, window around the eddy centre and grid spacing
-    COMPOSITE_DEPTHS_M = [200, 500, 800, 1200, 1600]
+    # 3D composite: window around the eddy centre and grid spacing (depth slices: see
+    # lbe_argo.processing.ocean_background)
     COMPOSITE_LEVEL_BIN_M = 30  # samples within this of a slice count towards it
     COMPOSITE_HALF_WIDTH_KM = 150
     COMPOSITE_GRID_KM = 6
@@ -220,7 +245,6 @@ def _():
         ANIMATION_MAX_FRAMES,
         ANIMATION_MIN_STEP_DAYS,
         ANIMATION_TAIL_DAYS,
-        COMPOSITE_DEPTHS_M,
         COMPOSITE_GRID_KM,
         COMPOSITE_HALF_WIDTH_KM,
         COMPOSITE_LENGTH_KM,
@@ -234,8 +258,6 @@ def _():
         INK_MUTED,
         INSIDE_COLOR,
         KM_PER_DEG,
-        MAP_EXTENT,
-        MODEL_MEAN_MAX_FILES,
         NEW_PROFILE_GAP_S,
         OUTSIDE_COLOR,
         R_EARTH_KM,
@@ -245,27 +267,9 @@ def _():
 
 
 @app.cell
-def _(EXPEDITIONS_DIR, RESULT_FILE, is_expedition, pl, yaml):
+def _(list_available):
     # every expedition (e.g. 1993_H1) with simulation output, and how many floats it releases
-    def expedition_setup(expedition_dir):
-        with open(expedition_dir / "expedition.yaml") as f:
-            expedition = yaml.safe_load(f)
-        return dict(
-            expedition=expedition_dir.name,
-            expedition_dir=str(expedition_dir),
-            year=int(expedition_dir.name[:4]),
-            n_floats=sum(
-                1 for wp in expedition["schedule"]["waypoints"] if wp.get("instrument")
-            ),
-        )
-
-    available = pl.DataFrame(
-        [
-            expedition_setup(p.parent.parent)
-            for p in sorted(EXPEDITIONS_DIR.glob(f"*/{RESULT_FILE}"))
-            if is_expedition(p.parent.parent)
-        ]
-    )
+    available = list_available()
     return (available,)
 
 
@@ -304,7 +308,14 @@ def _(available, mo):
 
 
 @app.cell
-def _(EDDY_RADIUS_DEFAULT_KM, LBE_CENTRE, PHYS_DATA_DIR, available, mo, pl):
+def _(
+    EDDY_RADIUS_DEFAULT_KM,
+    LBE_CENTRE,
+    available,
+    mo,
+    model_data_available,
+    pl,
+):
     _years = available["year"]
     year_range = mo.ui.range_slider(
         start=_years.min(),
@@ -327,7 +338,7 @@ def _(EDDY_RADIUS_DEFAULT_KM, LBE_CENTRE, PHYS_DATA_DIR, available, mo, pl):
     )
     centre_mode = mo.ui.dropdown(
         options=["Fixed", "Estimated from model data"]
-        if any(PHYS_DATA_DIR.glob("*.nc"))
+        if model_data_available()
         else ["Fixed"],
         value="Fixed",
         label="Eddy centre",
@@ -497,52 +508,15 @@ def _(NEW_PROFILE_GAP_S, Path, available, load_slim, mo, pl, year_range):
 
 
 @app.cell
-def _(
-    BATHYMETRY_FPATH,
-    COMPOSITE_DEPTHS_M,
-    EDDY_SEARCH_BOX,
-    MAP_EXTENT,
-    MODEL_MEAN_MAX_FILES,
-    PHYS_DATA_DIR,
-    math,
-    mo,
-    xr,
-):
+def _(EDDY_SEARCH_BOX, load_bathymetry, load_model_mean_temp, mo):
     # background fields: bathymetry, and the model's time-mean temperature at the 3D
     # picture's depth slices. Independent of the controls, so this only runs once.
-    _lon_min, _lon_max, _lat_min, _lat_max = MAP_EXTENT
-    _region = dict(
-        latitude=slice(_lat_min, _lat_max), longitude=slice(_lon_min, _lon_max)
-    )
+    bathymetry = load_bathymetry()  # NaN on land
 
-    bathymetry = (
-        xr.open_dataset(BATHYMETRY_FPATH).deptho.sel(**_region).load()
-    )  # NaN on land
-
-    _files = sorted(PHYS_DATA_DIR.glob("*.nc"))
-    model_mean_temp, mean_temp_500m, model_eddy_centre = None, None, None
-    if _files:
-        # an evenly spaced subset of the daily files is plenty for the climatology
-        _subset = _files[:: max(1, math.ceil(len(_files) / MODEL_MEAN_MAX_FILES))]
-        with mo.status.spinner(
-            title=f"Averaging model temperature over {len(_subset)} daily files"
-        ):
-            with xr.open_mfdataset(
-                _subset,
-                combine="by_coords",
-                data_vars="minimal",
-                coords="minimal",
-                compat="override",
-            ) as _ds:
-                # the model's own depth levels are irregular (186m, 541m...), so keep the
-                # levels around the ones we want and interpolate onto round depths
-                model_mean_temp = (
-                    _ds.thetao.sel(depth=slice(0, max(COMPOSITE_DEPTHS_M) + 200))
-                    .mean("time")
-                    .sel(**_region)
-                    .load()
-                    .interp(depth=COMPOSITE_DEPTHS_M)
-                )
+    with mo.status.spinner(title="Loading model temperature"):
+        model_mean_temp = load_model_mean_temp()
+    mean_temp_500m, model_eddy_centre = None, None
+    if model_mean_temp is not None:
         mean_temp_500m = model_mean_temp.sel(depth=500)
 
         # rough eddy centre: the warmest (lightly smoothed) 500m water in the Lofoten Basin
